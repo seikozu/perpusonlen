@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Buku;
 
 class Kategori extends Model
 {
@@ -11,6 +10,6 @@ class Kategori extends Model
 
     public function buku()
     {
-        return $this->hasMany(Buku::class);
+        return $this->hasMany(Buku::class, 'kategori_id');
     }
 }

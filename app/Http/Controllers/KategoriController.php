@@ -30,11 +30,17 @@ class KategoriController extends Controller
      */
     public function store(Request $request)
     {
-        Kategori::create([
-        'nama_kategori' => $request->nama_kategori
-    ]);
+        // Validasi input
+        $request->validate([
+            'nama_kategori' => 'required|unique:kategoris,nama_kategori',
+        ]);
 
-    return redirect()->route('kategori.index');
+        // Simpan ke database
+        Kategori::create([
+            'nama_kategori' => $request->nama_kategori
+        ]);
+
+        return redirect()->route('kategori.index')->with('success', 'Kategori baru berhasil ditambahkan!');
     }
 
     /**

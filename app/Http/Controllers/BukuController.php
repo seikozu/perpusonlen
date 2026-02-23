@@ -6,85 +6,60 @@ use Illuminate\Http\Request;
 use App\Models\Buku;
 use App\Models\Kategori;
 
-
 class BukuController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
+        // Mengambil data buku beserta relasi kategorinya
         $buku = Buku::with('kategori')->get();
         return view('buku.index', compact('buku'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $kategori = Kategori::all();
         return view('buku.create', compact('kategori'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
+            'kategori_id' => 'required|exists:kategoris,id',
             'judul' => 'required',
-            'kategori_id' => 'required',
             'pengarang' => 'required',
         ]);
 
-        // ambil kategori
-        $kategori = Kategori::find($request->kategori_id);
+        // 2. Ambil data kategori
+        $kategori = Kategori::findOrFail($request->kategori_id);
+        
+        // 3. Logika generate kode otomatis (Novel -> NV, Biografi -> BI)
+        $inisial = strtoupper(substr($kategori->nama_kategori, 0, 2));
 
-        // tentukan prefix
-        $prefix = match(strtolower($kategori->nama_kategori)) {
-            'biografi' => 'BO',
-            'novel' => 'NV',
-            default => 'BK'
-        };
+        // Cari kode terakhir dengan inisial tersebut di database PostgreSQL
+        $lastBook = Buku::where('kode', 'LIKE', $inisial . '-%')
+                        ->orderBy('kode', 'desc')
+                        ->first();
 
-        // cari kode terakhir dengan prefix sama
-        $lastBuku = Buku::where('kode', 'like', $prefix . '-%')
-            ->orderBy('kode', 'desc')
-            ->first();
-
-        if ($lastBuku) {
-            $lastNumber = (int) substr($lastBuku->kode, 3);
-            $newNumber = str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT);
+        if ($lastBook) {
+            $lastNumber = (int) substr($lastBook->kode, 3);
+            $nextNumber = $lastNumber + 1;
         } else {
-            $newNumber = '01';
+            $nextNumber = 1;
         }
 
-        $kode = $prefix . '-' . $newNumber;
+        $newCode = $inisial . '-' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
 
-        // simpan data
+        // 4. Simpan ke Database dengan nama kolom sesuai pgAdmin
         Buku::create([
-            'kode' => $kode,
+            'kode' => $newCode,
             'judul' => $request->judul,
-            'kategori_id' => $request->kategori_id,
-            'pengarang' => $request->pengarang,
-            'cover' => null,
+            'kategori_id' => $request->kategori_id, // Kolom: kategori_id
+            'pengarang' => $request->pengarang,     // Kolom: pengarang
         ]);
 
-        return redirect()->route('buku.index')->with('success', 'Buku berhasil ditambahkan');
+        return redirect()->route('buku.index')->with('success', 'Buku berhasil ditambahkan dengan kode ' . $newCode);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $buku = Buku::findOrFail($id);
@@ -92,26 +67,25 @@ class BukuController extends Controller
         return view('buku.edit', compact('buku', 'kategori'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $buku = Buku::findOrFail($id);
-        $buku->update($request->all());
+        
+        // Pastikan update menggunakan data yang tervalidasi
+        $buku->update([
+            'judul' => $request->judul,
+            'kategori_id' => $request->kategori_id,
+            'pengarang' => $request->pengarang,
+        ]);
 
-        return redirect()->route('buku.index');
-
+        return redirect()->route('buku.index')->with('success', 'Data buku berhasil diperbarui');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $buku = Buku::findOrFail($id);
         $buku->delete();
 
-        return redirect()->route('buku.index');
+        return redirect()->route('buku.index')->with('success', 'Buku berhasil dihapus');
     }
 }
