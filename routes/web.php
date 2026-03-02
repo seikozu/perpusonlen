@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BukuController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\BarangController;
 
 
 Route::get('/', function () {
@@ -18,6 +19,9 @@ Route::get('/dashboard', function () {
 
 Route::resource('buku', BukuController::class)->middleware('auth');
 Route::resource('kategori', KategoriController::class);
+Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
+Route::post('/barang/print', [App\Http\Controllers\BarangController::class, 'print'])->name('barang.print');
+Route::post('/barang/store', [App\Http\Controllers\BarangController::class, 'store'])->name('barang.store');
 
 Route::get('/halaman-pdf', [PDFController::class, 'index']); // Untuk buka halaman form
 Route::post('/generate-sertifikat', [PDFController::class, 'generateSertifikat']);

@@ -43,5 +43,11 @@
         <i class="mdi mdi-file-pdf menu-icon"></i>
     </a>
     </li>
+    <li class="nav-item">
+    <a class="nav-link" href="{{ route('barang.index') }}">
+      <span class="menu-title">Kelola Barang</span>
+      <i class="mdi mdi-cube menu-icon"></i>
+    </a>
+  </li>
   </ul>
 </nav>
