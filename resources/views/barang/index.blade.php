@@ -2,7 +2,13 @@
 
 @section('content')
 <div class="page-header">
-  <h3 class="page-title"> Kelola Barang </h3>
+  <h3 class="page-title"> Kelola Tag Barang </h3>
+  <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Barang</li>
+        </ol>
+    </nav>
 </div>
 
 <div class="row">
@@ -11,9 +17,9 @@
       <div class="card-body">
         <h4 class="card-title">Cetak Tag Harga UMKM</h4>
         
-        <button type="button" class="btn btn-success btn-fw mb-3" data-toggle="modal" data-target="#modalTambah">
+        <a href="{{ url('/barang/create') }}" class="btn btn-success btn-fw mb-3">
             <i class="mdi mdi-plus"></i> Tambah Barang
-        </button>
+        </a>
 
         <form action="{{ route('barang.print') }}" method="POST" target="_blank">
           @csrf

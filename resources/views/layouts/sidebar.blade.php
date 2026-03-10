@@ -19,12 +19,6 @@
         <i class="mdi mdi-home menu-icon"></i>
       </a>
     </li>
-    <!-- <li class="nav-item">
-      <a class="nav-link" href="{{ url('/pengguna') }}">
-        <span class="menu-title">Kelola Pengguna</span>
-        <i class="mdi mdi-account menu-icon"></i>
-      </a>
-    </li> -->
     <li class="nav-item">
       <a class="nav-link" href="{{ url('/kategori') }}">
         <span class="menu-title">Kelola Kategori</span>
@@ -38,16 +32,35 @@
       </a>
     </li>
     <li class="nav-item">
-    <a class="nav-link" href="{{ url('/halaman-pdf') }}">
+      <a class="nav-link" href="{{ url('/halaman-pdf') }}">
         <span class="menu-title">Cetak PDF</span>
         <i class="mdi mdi-file-pdf menu-icon"></i>
-    </a>
+      </a>
     </li>
     <li class="nav-item">
-    <a class="nav-link" href="{{ route('barang.index') }}">
-      <span class="menu-title">Kelola Barang</span>
-      <i class="mdi mdi-cube menu-icon"></i>
-    </a>
-  </li>
-  </ul>
+      <a class="nav-link" href="{{ route('barang.index') }}">
+        <span class="menu-title">Kelola Barang</span>
+        <i class="mdi mdi-cube menu-icon"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#ui-modul4" aria-expanded="false" aria-controls="ui-modul4">
+        <span class="menu-title">Tugas Modul 4</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="ui-modul4">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> 
+            <a class="nav-link" href="{{ url('/modul4/tabel-biasa') }}">Tabel Biasa</a>
+          </li>
+          <li class="nav-item"> 
+            <a class="nav-link" href="{{ url('/modul4/tabel-datatables') }}">DataTables</a>
+          </li>
+          <li class="nav-item"> 
+              <a class="nav-link" href="{{ url('/modul4/select-kota') }}"> Manipulasi Select </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul> 
 </nav>

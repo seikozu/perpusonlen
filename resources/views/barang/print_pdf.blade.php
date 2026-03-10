@@ -3,13 +3,14 @@
 <head>
     <style>
         @page { 
-            size: 210mm 297mm; 
+            size: 210mm 148mm; 
             margin: 0; 
         }
         
         body { 
             margin: 0; 
-            padding: 10mm 5mm; /* Sesuaikan margin fisik kertas TnJ */
+            padding-top: 1mm;
+            padding-left: 1mm; /* Sesuaikan margin fisik kertas TnJ */
             font-family: sans-serif;
         }
 
@@ -23,12 +24,12 @@
             vertical-align: top;
             width: 38mm;   /* Lebar standar label TnJ 108  */
             height: 18mm;  /* Tinggi standar label TnJ 108  */
-            margin: 1mm;   /* Jarak antar label */
-            padding: 2mm;
-            border: 0.1pt solid #ccc; /* Panduan potong */
+            margin: 0.2mm;   /* Jarak antar label */
+            padding: 1mm;
+            border: 0.1px solid #000; /* Border untuk melihat batas label, bisa dihapus */
             box-sizing: border-box;
             text-align: center;
-            font-size: 8pt; /* Reset font size untuk konten */
+            font-size: 7pt; /* Reset font size untuk konten */
         }
 
         .nama { font-weight: bold; display: block; height: 8mm; overflow: hidden; }
@@ -37,7 +38,7 @@
     </style>
 </head>
 <body>
-    <div style="padding: 10mm;">
+    <div class="label-container">
         @for ($i = 0; $i < $skip; $i++)
             <div class="label-box" style="border: none;"></div>
         @endfor

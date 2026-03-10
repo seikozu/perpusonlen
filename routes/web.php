@@ -22,6 +22,11 @@ Route::resource('kategori', KategoriController::class);
 Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
 Route::post('/barang/print', [App\Http\Controllers\BarangController::class, 'print'])->name('barang.print');
 Route::post('/barang/store', [App\Http\Controllers\BarangController::class, 'store'])->name('barang.store');
+Route::get('/barang/create', [App\Http\Controllers\BarangController::class, 'create'])->name('barang.create');
+
+Route::get('/modul4/tabel-biasa', function () {return view('modul4.barang_lokal');});
+Route::get('/modul4/tabel-datatables', function () {return view('modul4.barang_datatables');});
+Route::get('/modul4/select-kota', function () {return view('modul4.select_kota');});
 
 Route::get('/halaman-pdf', [PDFController::class, 'index']); // Untuk buka halaman form
 Route::post('/generate-sertifikat', [PDFController::class, 'generateSertifikat']);

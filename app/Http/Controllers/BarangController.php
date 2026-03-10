@@ -25,7 +25,8 @@ class BarangController extends Controller
         // Rumus skip kotak berdasarkan koordinat X dan Y
         $skip = (($y - 1) * 5) + ($x - 1); 
 
-        $pdf = \Pdf::loadView('barang.print_pdf', compact('barangs', 'skip'));
+        $pdf = \Pdf::loadView('barang.print_pdf', compact('barangs', 'skip'))
+            ->setPaper('a5', 'landscape');
         return $pdf->stream('tag-harga.pdf');
     }
 
@@ -39,10 +40,15 @@ class BarangController extends Controller
         \App\Models\Barang::create([
             'nama' => $request->nama,
             'harga' => $request->harga,
-            // id_barang & timestamp otomatis terisi oleh trigger database
+
         ]);
 
-        return redirect()->back()->with('success', 'Barang berhasil ditambahkan!');
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan!');
+    }
+    public function create()
+    {
+        // Mengarahkan ke file resources/views/barang/create.blade.php
+        return view('barang.create');
     }
 }
 

@@ -20,7 +20,7 @@
                 <h4 class="card-title">Input Data Buku Baru</h4>
                 <p class="card-description"> Masukkan detail buku dengan lengkap </p>
                 
-                <form class="forms-sample" action="{{ url('/buku') }}" method="POST">
+                <form id="formBuku" class="forms-sample" action="{{ url('/buku') }}" method="POST">
                     @csrf
                     <div class="form-group">
                         <label for="kode_buku">Kode Buku</label>
@@ -46,12 +46,41 @@
                         <label for="penulis">Penulis</label>
                         <input type="text" class="form-control" id="penulis" name="penulis" placeholder="Nama Penulis" required>
                     </div>
-                    
-                    <button type="submit" class="btn btn-gradient-primary me-2">Simpan Buku</button>
+                </form> <div class="mt-4">
+                    <button type="button" id="btnSubmit" onclick="handleSimpanBuku()" class="btn btn-gradient-primary me-2">
+                        <span id="textTombol">Simpan Buku</span>
+                        <span id="loaderTombol" style="display: none;">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Sedang Menyimpan...
+                        </span>
+                    </button>
                     <a href="{{ url('/buku') }}" class="btn btn-light">Batal</a>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function handleSimpanBuku() {
+        const form = document.getElementById('formBuku');
+        const btn = document.getElementById('btnSubmit');
+        const text = document.getElementById('textTombol');
+        const loader = document.getElementById('loaderTombol');
+
+        // i. Check apakah semua input required telah terisi
+        if (form.checkValidity()) {
+            // iii. Ubah button jadi spinner dan disable (anti double click)
+            btn.disabled = true;
+            text.style.display = 'none';
+            loader.style.display = 'inline-block';
+            
+            // Submit form secara manual
+            form.submit();
+        } else {
+            // ii. Tunjukkan input mana yang masih kosong
+            form.reportValidity();
+        }
+    }
+</script>
 @endsection
