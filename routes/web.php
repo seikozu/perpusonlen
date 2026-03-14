@@ -28,6 +28,13 @@ Route::get('/modul4/tabel-biasa', function () {return view('modul4.barang_lokal'
 Route::get('/modul4/tabel-datatables', function () {return view('modul4.barang_datatables');});
 Route::get('/modul4/select-kota', function () {return view('modul4.select_kota');});
 
+Route::get('/modul5/wilayah', function (){return view('modul5.wilayah');});
+Route::get('/modul5/pos', function () {
+    return view('modul5.transaksi'); // Pastikan nama filenya transaksi.blade.php
+});
+Route::get('/api/barang/{id}', [BarangController::class, 'getBarangByKode']);
+Route::post('/api/transaksi/simpan', [App\Http\Controllers\TransaksiController::class, 'simpanTransaksi']);
+
 Route::get('/halaman-pdf', [PDFController::class, 'index']); // Untuk buka halaman form
 Route::post('/generate-sertifikat', [PDFController::class, 'generateSertifikat']);
 Route::post('/generate-pengumuman', [PDFController::class, 'generatePengumuman']);

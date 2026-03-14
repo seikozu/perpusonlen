@@ -62,5 +62,16 @@
         </ul>
       </div>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url('/modul5/wilayah') }}">
+        <span class="menu-title">Kelola Wilayah</span>
+        <i class="mdi mdi-map-marker menu-icon"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url('/modul5/pos') }}">
+        <span class="menu-title">Transaksi Penjualan</span>
+        <i class="mdi mdi-cart menu-icon"></i>
+      </a>
   </ul> 
 </nav>

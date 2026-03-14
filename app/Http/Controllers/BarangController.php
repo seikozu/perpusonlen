@@ -50,5 +50,21 @@ class BarangController extends Controller
         // Mengarahkan ke file resources/views/barang/create.blade.php
         return view('barang.create');
     }
+    // Tambahkan fungsi ini di dalam class BarangController
+    public function getBarangByKode($id)
+    {
+        // Cari berdasarkan primary key id_barang
+        $barang = Barang::find($id);
+
+        if ($barang) {
+            return response()->json([
+                'nama' => $barang->nama,
+                'harga' => $barang->harga
+            ]);
+        }
+
+        // Jika tidak ketemu, kirim null agar ditangkap catch oleh Axios
+        return response()->json(null, 404);
+    }
 }
 
