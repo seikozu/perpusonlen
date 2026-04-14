@@ -7,6 +7,7 @@ use App\Http\Controllers\BukuController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\PemesananController;
 
 
 Route::get('/', function () {
@@ -50,5 +51,11 @@ Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])
 
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])
     ->name('google.callback');
+
+Route::prefix('modul6')->group(function () {
+    Route::get('/pemesanan', [PemesananController::class, 'index']);
+    Route::get('/get-menus/{idvendor}', [PemesananController::class, 'getMenus']);
+    Route::post('/checkout', [PemesananController::class, 'checkout']);
+});
 
 require __DIR__.'/auth.php';

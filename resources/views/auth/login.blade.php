@@ -83,7 +83,11 @@
             Sign in with Google
         </a>
     </div>
-
+    <div class="mt-3">
+        <a href="{{ url('/modul6/pemesanan') }}" class="btn btn-block btn-outline-primary auth-form-btn">
+            <i class="mdi mdi-account-outline me-2"></i>Masuk sebagai Tamu (Guest)
+        </a>
+    </div>
 </form>
 
 </div>

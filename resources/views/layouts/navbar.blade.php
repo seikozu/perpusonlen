@@ -19,9 +19,12 @@
     </div>
     <ul class="navbar-nav navbar-nav-right">
       
+      {{-- MODIFIKASI DI SINI: Cek apakah User Login atau Guest --}}
+      @auth
       <li class="nav-item nav-profile dropdown">
         <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
           <div class="nav-profile-img">
+            {{-- Tambahkan pengecekan optional() agar id_google tidak crash --}}
             <img src="{{ Auth::user()->id_google ? 'https://lh3.googleusercontent.com/a/' . Auth::user()->id_google : asset('assets/images/faces/face1.jpg') }}" alt="image">
             <span class="availability-status online"></span>
           </div>
@@ -42,6 +45,14 @@
           </form>
         </div>
       </li>
+      @else
+      {{-- Tampilan untuk Guest / Tamu --}}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('login') }}">
+          <button class="btn btn-sm btn-gradient-primary">Login</button>
+        </a>
+      </li>
+      @endauth
 
       <li class="nav-item dropdown">
         <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -82,9 +93,12 @@
       </li>
 
       <li class="nav-item nav-logout d-none d-lg-block">
-        <a class="nav-link" href="#">
+        {{-- Logout button juga dibungkus @auth agar tidak muncul bagi Guest --}}
+        @auth
+        <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
           <i class="mdi mdi-power"></i>
         </a>
+        @endauth
       </li>
     </ul>
     <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
