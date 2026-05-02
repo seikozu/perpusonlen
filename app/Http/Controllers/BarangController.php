@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class BarangController extends Controller
 {
@@ -16,7 +17,11 @@ class BarangController extends Controller
 
     public function print(Request $request)
     {
-        $selectedIds = $request->ids;
+        $selectedIds = $request->input('ids', []);
+        if (empty($selectedIds)) {
+            return back()->withErrors(['ids' => 'Please select at least one item to print.']);
+        }
+
         $barangs = \App\Models\Barang::whereIn('id_barang', $selectedIds)->get();
 
         $x = (int)$request->start_x;
@@ -25,8 +30,15 @@ class BarangController extends Controller
         // Rumus skip kotak berdasarkan koordinat X dan Y
         $skip = (($y - 1) * 5) + ($x - 1); 
 
+        $generator = new BarcodeGeneratorPNG();
+        $barangs = $barangs->map(function ($item) use ($generator) {
+            $barcode = base64_encode($generator->getBarcode($item->id_barang, $generator::TYPE_CODE_128, 2, 40));
+            $item->barcode = 'data:image/png;base64,' . $barcode;
+            return $item;
+        });
+
         $pdf = \Pdf::loadView('barang.print_pdf', compact('barangs', 'skip'))
-            ->setPaper('a5', 'landscape');
+            ->setPaper([0, 0, 595.28, 467.32]);
         return $pdf->stream('tag-harga.pdf');
     }
 

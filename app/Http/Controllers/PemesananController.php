@@ -65,6 +65,8 @@ class PemesananController extends Controller
                 throw new \Exception('Midtrans server key tidak dikonfigurasi. Periksa file .env.');
             }
 
+            $orderId = 'KANTIN-' . $pesanan->idpesanan . '-' . time();
+
             $response = Http::withBasicAuth($serverKey, '')
                 ->withHeaders([
                     'Accept'       => 'application/json',
@@ -74,7 +76,7 @@ class PemesananController extends Controller
                 ->timeout(30)
                 ->post('https://app.sandbox.midtrans.com/snap/v1/transactions', [
                     'transaction_details' => [
-                        'order_id'     => 'KANTIN-' . $pesanan->idpesanan . '-' . time(),
+                        'order_id'     => $orderId,
                         'gross_amount' => (int)$request->total,
                     ],
                     'customer_details' => [
@@ -93,16 +95,47 @@ class PemesananController extends Controller
 
             $snapToken = $response->json()['token'];
             
-            // 4. Update Token ke Database
-            $pesanan->update(['snap_token' => $snapToken]);
+            // 4. Update Token dan order ID ke Database
+            $pesanan->update([
+                'snap_token' => $snapToken,
+                'midtrans_order_id' => $orderId,
+            ]);
 
             DB::commit();
-            return response()->json(['snap_token' => $snapToken]);
+            return response()->json([
+                'snap_token' => $snapToken,
+                'idpesanan'  => $pesanan->idpesanan,
+                'midtrans_order_id' => $pesanan->midtrans_order_id,
+            ]);
 
         } catch (\Exception $e) {
             \Log::error('Checkout error: ' . $e->getMessage());
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function paymentSuccess(Request $request)
+    {
+        $request->validate([
+            'idpesanan' => 'required|integer|exists:pesanans,idpesanan',
+        ]);
+
+        $pesanan = Pesanan::find($request->idpesanan);
+        if (!$pesanan) {
+            return response()->json(['error' => 'Pesanan tidak ditemukan.'], 404);
+        }
+
+        $pesanan->update([
+            'status_bayar' => 1,
+            'payment_type' => $request->input('payment_type', $pesanan->payment_type),
+        ]);
+
+        return response()->json([
+            'message' => 'Status pesanan diperbarui.',
+            'idpesanan' => $pesanan->idpesanan,
+            'midtrans_order_id' => $pesanan->midtrans_order_id,
+            'payment_type' => $pesanan->payment_type,
+        ]);
     }
 }

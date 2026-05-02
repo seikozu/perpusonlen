@@ -8,6 +8,8 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PemesananController;
+use App\Http\Controllers\CustomerController;
+
 
 
 Route::get('/', function () {
@@ -56,6 +58,12 @@ Route::prefix('modul6')->group(function () {
     Route::get('/pemesanan', [PemesananController::class, 'index']);
     Route::get('/get-menus/{idvendor}', [PemesananController::class, 'getMenus']);
     Route::post('/checkout', [PemesananController::class, 'checkout']);
+    Route::post('/payment-success', [PemesananController::class, 'paymentSuccess']);
 });
+Route::get('/customer/tambah-1', [CustomerController::class, 'tambah1'])->name('customer.tambah1');
+Route::post('/customer/simpan-1', [CustomerController::class, 'simpan1'])->name('customer.simpan1');
+Route::get('/customer/tambah-2', [CustomerController::class, 'tambah2'])->name('customer.tambah2');
+Route::post('/customer/simpan-2', [CustomerController::class, 'simpan2'])->name('customer.simpan2');
+Route::get('/customer/data', [CustomerController::class, 'index'])->name('customer.index');
 
 require __DIR__.'/auth.php';

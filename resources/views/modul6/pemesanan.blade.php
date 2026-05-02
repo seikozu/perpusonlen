@@ -120,7 +120,8 @@
                                     <th>Waktu</th>
                                     <th>Pelanggan</th>
                                     <th>Total Bayar</th>
-                                    <th>Status</th>
+                                    <th>Metode</th>
+                                    <th>Order ID</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -129,7 +130,8 @@
                                     <td>{{ $lunas->created_at }}</td>
                                     <td><span class="badge badge-info">{{ $lunas->nama }}</span></td>
                                     <td>Rp {{ number_format($lunas->total, 0, ',', '.') }}</td>
-                                    <td><label class="badge badge-success">LUNAS</label> </td>
+                                    <td>{{ $lunas->payment_type ?? '-' }}</td>
+                                    <td>{{ $lunas->midtrans_order_id ?? '-' }}</td>
                                 </tr>
                                 @empty
                                 <tr><td colspan="4" class="text-center py-4 text-muted">Belum ada pesanan lunas.</td></tr>
@@ -148,6 +150,7 @@
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-Wa52NoSq798k25fd"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
     axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -155,6 +158,7 @@
     let cart = [];
     let selectedMenuData = null;
     let grandTotal = 0;
+    let currentOrderId = null;
 
     function loadMenus(idvendor) {
         const selectMenu = document.getElementById('select_menu');
@@ -241,18 +245,43 @@
         })
         .then(res => {
             Swal.close();
+            currentOrderId = res.data.idpesanan;
             window.snap.pay(res.data.snap_token, {
-                onSuccess: function(result) { 
-                    Swal.fire('Berhasil!', 'Pembayaran Berhasil', 'success').then(() => location.reload()); 
+                onSuccess: function(result) {
+                    axios.post('/modul6/payment-success', {
+                        idpesanan: currentOrderId,
+                        payment_type: result.payment_type || null
+                    })
+                    .then(resp => {
+                        Swal.fire({
+                            title: 'Pembayaran Berhasil',
+                            html: `<div class="text-center mb-2">Pesanan: <strong>${resp.data.idpesanan}</strong></div>
+                                   <div class="text-center mb-2">Order ID: <strong>${resp.data.midtrans_order_id}</strong></div>
+                                   <div id="qrcode"></div>`,
+                            width: 380,
+                            didOpen: () => {
+                                const qrcodeEl = document.getElementById('qrcode');
+                                qrcodeEl.innerHTML = '';
+                                new QRCode(qrcodeEl, {
+                                    text: String(resp.data.idpesanan),
+                                    width: 160,
+                                    height: 160
+                                });
+                            }
+                        }).then(() => location.reload());
+                    })
+                    .catch(() => {
+                        Swal.fire('Gagal!', 'Pembayaran sudah berhasil tetapi proses update ke server gagal.', 'error');
+                    });
                 },
-                onPending: function(result) { 
-                    Swal.fire('Pending', 'Selesaikan pembayaran segera', 'info').then(() => location.reload()); 
+                onPending: function(result) {
+                    Swal.fire('Pending', 'Selesaikan pembayaran segera', 'info').then(() => location.reload());
                 },
-                onError: function(result) { 
-                    Swal.fire('Gagal', 'Pembayaran Gagal', 'error'); 
+                onError: function(result) {
+                    Swal.fire('Gagal', 'Pembayaran Gagal', 'error');
                 },
-                onClose: function() { 
-                    Swal.fire('Info', 'Anda menutup jendela pembayaran', 'warning'); 
+                onClose: function() {
+                    Swal.fire('Info', 'Anda menutup jendela pembayaran', 'warning');
                 }
             });
         })
