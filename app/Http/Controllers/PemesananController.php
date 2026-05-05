@@ -138,4 +138,39 @@ class PemesananController extends Controller
             'payment_type' => $pesanan->payment_type,
         ]);
     }
+
+    public function getPesananById($id)
+    {
+        $pesanan = Pesanan::with(['detailPesanan.menu.vendor'])->find($id);
+        if (!$pesanan) {
+            return response()->json(['error' => 'Pesanan tidak ditemukan.'], 404);
+        }
+
+        $items = $pesanan->detailPesanan->map(function ($detail) {
+            return [
+                'idmenu' => $detail->idmenu,
+                'nama_menu' => $detail->menu->nama_menu ?? '-',
+                'jumlah' => $detail->jumlah,
+                'harga' => $detail->harga,
+                'subtotal' => $detail->subtotal,
+                'catatan' => $detail->catatan,
+                'nama_vendor' => $detail->menu->vendor->nama_vendor ?? '-',
+            ];
+        });
+
+        return response()->json([
+            'idpesanan' => $pesanan->idpesanan,
+            'nama' => $pesanan->nama,
+            'total' => $pesanan->total,
+            'status_bayar' => $pesanan->status_bayar,
+            'payment_type' => $pesanan->payment_type,
+            'midtrans_order_id' => $pesanan->midtrans_order_id,
+            'items' => $items,
+        ]);
+    }
+
+    public function vendorScan()
+    {
+        return view('modul6.vendor_scan');
+    }
 }

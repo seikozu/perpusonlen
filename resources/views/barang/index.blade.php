@@ -20,6 +20,9 @@
         <a href="{{ url('/barang/create') }}" class="btn btn-success btn-fw mb-3">
             <i class="mdi mdi-plus"></i> Tambah Barang
         </a>
+        <a href="{{ route('barang.scan') }}" class="btn btn-info btn-fw mb-3 ml-2">
+            <i class="mdi mdi-barcode-scan"></i> Scan Barcode
+        </a>
 
         <form action="{{ route('barang.print') }}" method="POST" target="_blank">
           @csrf

@@ -22,4 +22,9 @@ class DetailPesanan extends Model
     ];
 
     public $timestamps = false;
+
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class, 'idmenu', 'idmenu');
+    }
 }

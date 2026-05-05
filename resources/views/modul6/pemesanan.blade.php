@@ -104,15 +104,37 @@
                             Bayar Sekarang 
                         </button>
                     </div>
+
+                    <div id="last-order-card" class="card mt-4" style="display:none;">
+                        <div class="card-body">
+                            <h5 class="card-title">QR Code Pesanan Terakhir</h5>
+                            <p class="card-text">Simpan QR Code ini untuk ditunjukkan ke vendor. QR code ini tetap dapat diakses setelah halaman ditutup selama menggunakan browser yang sama.</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div id="last-order-qrcode"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>ID Pesanan:</strong> <span id="last-order-id">-</span></p>
+                                    <p><strong>Status Bayar:</strong> <span id="last-order-status">-</span></p>
+                                    <p><strong>Total:</strong> <span id="last-order-total">-</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 @endif
 
                 {{-- 2. BAGIAN VENDOR --}}
                 @if(auth()->check() && ($roleName == 'vendor' || $roleName == 'admin'))
                 <div class="vendor-section mt-5 p-4 border rounded bg-light">
-                    <h5 class="text-success mb-3">
-                        <i class="mdi mdi-checkbox-marked-circle-outline"></i> Monitoring Pesanan Lunas
-                    </h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-success mb-0">
+                            <i class="mdi mdi-checkbox-marked-circle-outline"></i> Monitoring Pesanan Lunas
+                        </h5>
+                        <a href="{{ url('/modul6/vendor-scan') }}" class="btn btn-info btn-sm">
+                            <i class="mdi mdi-qrcode-scan"></i> Vendor Scan QR Code
+                        </a>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover bg-white">
                             <thead class="thead-dark">
@@ -224,6 +246,39 @@
         document.getElementById('btnCheckout').disabled = cart.length === 0;
     }
 
+    function showLastOrderCard(data) {
+        document.getElementById('last-order-card').style.display = 'block';
+        document.getElementById('last-order-id').textContent = data.idpesanan;
+        document.getElementById('last-order-status').textContent = data.status_bayar === 1 ? 'Lunas' : 'Belum lunas';
+        document.getElementById('last-order-total').textContent = 'Rp ' + Number(data.total).toLocaleString('id-ID');
+        const qrTarget = document.getElementById('last-order-qrcode');
+        qrTarget.innerHTML = '';
+        new QRCode(qrTarget, {
+            text: String(data.idpesanan),
+            width: 160,
+            height: 160
+        });
+    }
+
+    function saveLastOrderId(id) {
+        localStorage.setItem('kantin_last_order_id', id);
+    }
+
+    function loadLastOrderId() {
+        const storedId = localStorage.getItem('kantin_last_order_id');
+        if (!storedId) {
+            return;
+        }
+
+        axios.get(`/api/pesanan/${storedId}`)
+            .then(res => {
+                showLastOrderCard(res.data);
+            })
+            .catch(() => {
+                localStorage.removeItem('kantin_last_order_id');
+            });
+    }
+
     function hapusItem(index) {
         cart.splice(index, 1);
         renderTable();
@@ -268,14 +323,20 @@
                                     height: 160
                                 });
                             }
-                        }).then(() => location.reload());
+                        }).then(() => {
+                        saveLastOrderId(resp.data.idpesanan);
+                        showLastOrderCard({
+                            idpesanan: resp.data.idpesanan,
+                            status_bayar: 1,
+                            total: grandTotal
+                        });
                     })
                     .catch(() => {
                         Swal.fire('Gagal!', 'Pembayaran sudah berhasil tetapi proses update ke server gagal.', 'error');
                     });
                 },
                 onPending: function(result) {
-                    Swal.fire('Pending', 'Selesaikan pembayaran segera', 'info').then(() => location.reload());
+                    Swal.fire('Pending', 'Selesaikan pembayaran segera', 'info');
                 },
                 onError: function(result) {
                     Swal.fire('Gagal', 'Pembayaran Gagal', 'error');
@@ -287,9 +348,13 @@
         })
         .catch(err => {
             Swal.close();
-            const msg = err.response.data.error || 'Gagal menghubungi server';
+            const msg = err.response?.data?.error || 'Gagal menghubungi server';
             Swal.fire('Gagal!', msg, 'error');
         });
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadLastOrderId();
+    });
 </script>
 @endsection

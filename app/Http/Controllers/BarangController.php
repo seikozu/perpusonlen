@@ -62,6 +62,12 @@ class BarangController extends Controller
         // Mengarahkan ke file resources/views/barang/create.blade.php
         return view('barang.create');
     }
+
+    public function scan()
+    {
+        return view('barang.scan');
+    }
+
     // Tambahkan fungsi ini di dalam class BarangController
     public function getBarangByKode($id)
     {

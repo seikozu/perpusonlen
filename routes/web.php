@@ -23,6 +23,7 @@ Route::get('/dashboard', function () {
 Route::resource('buku', BukuController::class)->middleware('auth');
 Route::resource('kategori', KategoriController::class);
 Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
+Route::get('/barang/scan', [BarangController::class, 'scan'])->name('barang.scan');
 Route::post('/barang/print', [App\Http\Controllers\BarangController::class, 'print'])->name('barang.print');
 Route::post('/barang/store', [App\Http\Controllers\BarangController::class, 'store'])->name('barang.store');
 Route::get('/barang/create', [App\Http\Controllers\BarangController::class, 'create'])->name('barang.create');
@@ -59,7 +60,9 @@ Route::prefix('modul6')->group(function () {
     Route::get('/get-menus/{idvendor}', [PemesananController::class, 'getMenus']);
     Route::post('/checkout', [PemesananController::class, 'checkout']);
     Route::post('/payment-success', [PemesananController::class, 'paymentSuccess']);
+    Route::get('/vendor-scan', [PemesananController::class, 'vendorScan'])->middleware('auth');
 });
+Route::get('/api/pesanan/{id}', [PemesananController::class, 'getPesananById']);
 Route::get('/customer/tambah-1', [CustomerController::class, 'tambah1'])->name('customer.tambah1');
 Route::post('/customer/simpan-1', [CustomerController::class, 'simpan1'])->name('customer.simpan1');
 Route::get('/customer/tambah-2', [CustomerController::class, 'tambah2'])->name('customer.tambah2');

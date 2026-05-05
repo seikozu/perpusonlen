@@ -15,4 +15,9 @@ class Pesanan extends Model
     // Matikan timestamps jika kamu tidak punya kolom created_at/updated_at
     // atau jika kamu pakai kolom 'timestamp' manual.
     public $timestamps = true; 
+
+    public function detailPesanan()
+    {
+        return $this->hasMany(DetailPesanan::class, 'idpesanan', 'idpesanan');
+    }
 }
