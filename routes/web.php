@@ -9,6 +9,7 @@ use App\Http\Controllers\PDFController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\GeolocationController;
 
 
 
@@ -68,5 +69,12 @@ Route::post('/customer/simpan-1', [CustomerController::class, 'simpan1'])->name(
 Route::get('/customer/tambah-2', [CustomerController::class, 'tambah2'])->name('customer.tambah2');
 Route::post('/customer/simpan-2', [CustomerController::class, 'simpan2'])->name('customer.simpan2');
 Route::get('/customer/data', [CustomerController::class, 'index'])->name('customer.index');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/modul9/kunjungan-toko', [GeolocationController::class, 'index'])->name('modul9.kunjungan-toko');
+    Route::post('/modul9/kunjungan-toko/store', [GeolocationController::class, 'store'])->name('modul9.kunjungan-toko.store');
+    Route::get('/modul9/kunjungan-toko/store/{barcode}', [GeolocationController::class, 'showStore']);
+    Route::post('/modul9/kunjungan-toko/check', [GeolocationController::class, 'checkVisit'])->name('modul9.kunjungan-toko.check');
+});
 
 require __DIR__.'/auth.php';

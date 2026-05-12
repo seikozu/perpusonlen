@@ -79,6 +79,13 @@
     </li>
 
     <li class="nav-item">
+      <a class="nav-link" href="{{ url('/modul9/kunjungan-toko') }}">
+        <span class="menu-title">Kunjungan Toko</span>
+        <i class="mdi mdi-map-marker-check menu-icon"></i>
+      </a>
+    </li>
+
+    <li class="nav-item">
       <a class="nav-link" href="{{ url('/modul6/pemesanan') }}">
         <span class="menu-title">
             @auth
